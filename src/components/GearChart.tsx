@@ -24,17 +24,18 @@ export function GearChart({ scores, size = 380 }: { scores: DimensionScore[]; si
 
     const cx = size / 2;
     const cy = size / 2;
-    const baseR = size * 0.28;
-    const maxToothLen = size * 0.13;
+    const baseR = size * 0.28;       // hub outer radius (tooth base)
+    const maxToothLen = size * 0.16; // full tooth height at 100%
 
     // Outer 8 = all dimensions except "transformacao" (which is the hub)
     const outer = scores.filter((s) => s.key !== "transformacao");
     const hub = scores.find((s) => s.key === "transformacao");
     const teethCount = outer.length; // 8
     const angleStep = (Math.PI * 2) / teethCount;
-    const toothWidth = angleStep * 0.55;
+    const toothAngle = angleStep * 0.6;   // 60% tooth, 40% gap
+    const tipRatio = 0.6;                  // tip width = 60% of base width
 
-    // base ring
+    // base ring (subtle)
     ctx.beginPath();
     ctx.arc(cx, cy, baseR, 0, Math.PI * 2);
     ctx.strokeStyle = "#222";
@@ -43,22 +44,35 @@ export function GearChart({ scores, size = 380 }: { scores: DimensionScore[]; si
 
     outer.forEach((s, i) => {
       const a = -Math.PI / 2 + i * angleStep;
-      const len = Math.max(8, (s.percent / 100) * maxToothLen);
-      const a1 = a - toothWidth / 2;
-      const a2 = a + toothWidth / 2;
+      const len = Math.max(2, (s.percent / 100) * maxToothLen);
+      const baseHalf = toothAngle / 2;
+      const tipHalf = baseHalf * tipRatio;
+
       const innerR = baseR;
       const outerR = baseR + len;
 
+      // Trapezoidal tooth: 4 corners
+      const p1x = cx + Math.cos(a - baseHalf) * innerR;
+      const p1y = cy + Math.sin(a - baseHalf) * innerR;
+      const p2x = cx + Math.cos(a - tipHalf) * outerR;
+      const p2y = cy + Math.sin(a - tipHalf) * outerR;
+      const p3x = cx + Math.cos(a + tipHalf) * outerR;
+      const p3y = cy + Math.sin(a + tipHalf) * outerR;
+      const p4x = cx + Math.cos(a + baseHalf) * innerR;
+      const p4y = cy + Math.sin(a + baseHalf) * innerR;
+
       ctx.beginPath();
-      ctx.arc(cx, cy, innerR, a1, a2);
-      ctx.arc(cx, cy, outerR, a2, a1, true);
+      ctx.moveTo(p1x, p1y);
+      ctx.lineTo(p2x, p2y);
+      ctx.lineTo(p3x, p3y);
+      ctx.lineTo(p4x, p4y);
       ctx.closePath();
       ctx.fillStyle = colorFor(s.percent);
       ctx.fill();
 
       // label tick
-      const lx = cx + Math.cos(a) * (outerR + 14);
-      const ly = cy + Math.sin(a) * (outerR + 14);
+      const lx = cx + Math.cos(a) * (baseR + maxToothLen + 18);
+      const ly = cy + Math.sin(a) * (baseR + maxToothLen + 18);
       ctx.fillStyle = "#aaa";
       ctx.font = "10px 'DM Mono', monospace";
       ctx.textAlign = "center";
