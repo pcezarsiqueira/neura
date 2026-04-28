@@ -42,9 +42,14 @@ function Resultado() {
   }, [scores]);
 
   const waMsg = encodeURIComponent(
-    `Olá Paulinho, fiz o Diagnóstico NEURA Corporativo da ${org.empresa}. Nosso maior gap está em ${weakest?.name}. Quero agendar a conversa de 20 minutos.`
+    `Olá Paulinho, fiz o Diagnóstico NEURA Corporativo. Sou ${org.nome}, ${org.cargo} da ${org.empresa}. Nosso maior gap está em ${weakest?.name} (${weakest?.percent}%). Quero agendar a conversa de 20 minutos.`
   );
   const waLink = `https://wa.me/5511920926873?text=${waMsg}`;
+
+  const dataResposta = useMemo(
+    () => new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }),
+    []
+  );
 
   function downloadPdf() {
     generatePdf({ org, scores, overallPercent, answers });
@@ -58,10 +63,15 @@ function Resultado() {
 
       <div ref={reportRef} className="pt-28 pb-16 px-5 sm:px-8 fade-in">
         <div className="max-w-5xl mx-auto">
-          <p className="font-mono text-[11px] tracking-widest text-primary">DIAGNÓSTICO CORPORATIVO</p>
-          <h1 className="font-display font-extrabold text-3xl md:text-5xl mt-3 leading-tight">
-            Diagnóstico de {org.empresa}, {org.nome.split(" ")[0]}.
+          <p className="font-mono text-[11px] tracking-widest text-primary">
+            {org.cargo} · {org.empresa}
+          </p>
+          <h1 className="font-display font-extrabold text-3xl md:text-5xl mt-3 leading-tight text-white">
+            Diagnóstico Organizacional
           </h1>
+          <p className="font-display font-bold text-sm md:text-base mt-3 text-secondary-fg">
+            Respondido por {org.nome} em {dataResposta}
+          </p>
 
           {/* status card */}
           <div className={`mt-8 bg-card p-6 ${
