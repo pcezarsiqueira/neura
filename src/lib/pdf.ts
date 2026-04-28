@@ -107,7 +107,7 @@ export function generatePdf({
     doc.setFont("helvetica", "bold");
     doc.text(`${s.percent}%`, W - M, y + 8, { align: "right" });
     // bar
-    doc.setFillColor(240);
+    doc.setFillColor(240, 240, 240);
     doc.rect(M, y + 12, W - 2 * M, 4, "F");
     doc.setFillColor(...ORANGE);
     doc.rect(M, y + 12, (W - 2 * M) * (s.percent / 100), 4, "F");
