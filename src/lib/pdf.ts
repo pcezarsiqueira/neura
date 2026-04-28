@@ -128,7 +128,7 @@ export function generatePdf({
 
     doc.setFontSize(11);
     doc.setTextColor(...ORANGE);
-    doc.text(`${sc.percent}% · ${sc.raw}/20`, M, M + 56);
+    doc.text(`${sc.percent}% — ${sc.raw}/20`, M, M + 56);
     doc.setTextColor(...SUB);
     doc.setFont("helvetica", "italic");
     doc.setFontSize(10);
