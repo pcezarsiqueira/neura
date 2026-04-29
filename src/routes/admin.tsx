@@ -2,46 +2,28 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { DIMENSIONS } from "@/data/dimensions";
-import type { DimensionScore, OrgData, Answers } from "@/state/diagnosticContext";
+import { storage, type DiagnosticRecord } from "@/lib/storage";
 
 export const Route = createFileRoute("/admin")({
   component: Admin,
 });
 
-type Record = {
-  key: string;
-  ts: number;
-  org: OrgData;
-  scores: DimensionScore[];
-  overallPercent: number;
-  answers: Answers;
-};
-
-function loadAll(): Record[] {
-  const list: Record[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && k.startsWith("neura_corp_")) {
-      try {
-        const v = JSON.parse(localStorage.getItem(k)!);
-        list.push({ key: k, ...v });
-      } catch {}
-    }
-  }
-  return list.sort((a, b) => b.ts - a.ts);
-}
+type Record = DiagnosticRecord;
 
 function Admin() {
   const [authed, setAuthed] = useState(false);
   const [pwd, setPwd] = useState("");
   const [records, setRecords] = useState<Record[]>([]);
 
-  useEffect(() => { if (authed) setRecords(loadAll()); }, [authed]);
+  useEffect(() => {
+    if (!authed) return;
+    storage.list().then(setRecords).catch((e) => console.error("storage.list failed", e));
+  }, [authed]);
 
-  function clearAll() {
+  async function clearAll() {
     if (!confirm("Tem certeza que deseja apagar TODOS os diagnósticos?")) return;
     if (!confirm("Confirmação final — esta ação é irreversível. Continuar?")) return;
-    records.forEach((r) => localStorage.removeItem(r.key));
+    try { await storage.clear(); } catch (e) { console.error(e); }
     setRecords([]);
   }
 
@@ -133,7 +115,7 @@ function Admin() {
                   const dimMap = Object.fromEntries(r.scores.map((s) => [s.key, s.percent]));
                   const weakest = [...r.scores].sort((a, b) => a.percent - b.percent)[0]?.name ?? "";
                   return (
-                    <tr key={r.key} className="border-b border-[var(--border-strong)]/50 hover:bg-card">
+                    <tr key={r.id} className="border-b border-[var(--border-strong)]/50 hover:bg-card">
                       <td className="py-3 px-2 text-secondary-fg">{new Date(r.ts).toLocaleString("pt-BR")}</td>
                       <td className="py-3 px-2">{r.org.nome}</td>
                       <td className="py-3 px-2 text-secondary-fg">{r.org.cargo}</td>

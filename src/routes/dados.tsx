@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { useDiagnostic, type OrgData } from "@/state/diagnosticContext";
+import { storage } from "@/lib/storage";
 
 export const Route = createFileRoute("/dados")({
   component: Dados,
@@ -109,14 +110,13 @@ function Dados() {
   const nav = useNavigate();
   const { org, setOrg, answers, scores, overallPercent } = useDiagnostic();
 
-  function handleSubmit(data: OrgData) {
+  async function handleSubmit(data: OrgData) {
     setOrg(data);
     try {
-      localStorage.setItem(
-        `neura_corp_${Date.now()}`,
-        JSON.stringify({ org: data, answers, scores, overallPercent, ts: Date.now() })
-      );
-    } catch {}
+      await storage.save({ org: data, answers, scores, overallPercent, ts: Date.now() });
+    } catch (e) {
+      console.error("storage.save failed", e);
+    }
     nav({ to: "/resultado" });
   }
 
