@@ -3,8 +3,8 @@ module.exports = {
     {
       name: "neura-frontend",
       script: "npx",
-      args: "serve -s dist -l 8080",
-      cwd: __dirname + "/..",
+      args: "serve -s /app/dist -l 8080",
+      cwd: "/app",
       env: {
         NODE_ENV: "production",
       },
@@ -12,7 +12,7 @@ module.exports = {
     {
       name: "neura-api",
       script: "server.js",
-      cwd: __dirname + "/api-node",
+      cwd: "/app/database/api-node",
       env: {
         NODE_ENV: "production",
       },
