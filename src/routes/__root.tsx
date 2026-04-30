@@ -4,11 +4,11 @@ import { DiagnosticProvider } from "@/state/diagnosticContext";
 
 function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+    <div className="min-h-screen flex items-center justify-center text-foreground">
       <div className="text-center">
-        <h1 className="font-display text-7xl text-primary">404</h1>
-        <p className="font-mono text-sm text-secondary-fg mt-4">Rota não encontrada.</p>
-        <a href="/" className="inline-block mt-6 font-mono text-xs text-primary border border-primary px-4 py-2">Voltar ao início</a>
+        <h1 className="font-bebas text-8xl text-cyan-gradient">404</h1>
+        <p className="uppercase-label mt-4" style={{ color: "rgba(248,246,242,0.55)" }}>Rota não encontrada</p>
+        <a href="/" className="btn-ghost inline-block mt-8 text-[10px]">Voltar ao início</a>
       </div>
     </div>
   );

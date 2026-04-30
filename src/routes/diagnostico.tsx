@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
+import { GearBackground } from "@/components/GearBackground";
 import { DIMENSIONS, TOTAL_QUESTIONS } from "@/data/dimensions";
 import { useDiagnostic } from "@/state/diagnosticContext";
 
@@ -25,27 +26,18 @@ function Diagnostico() {
     return n + step.q;
   }, [step]);
 
-  const progress = ((overallIndex) / TOTAL_QUESTIONS) * 100;
+  const progress = (overallIndex / TOTAL_QUESTIONS) * 100;
 
   function advance() {
     const isLastQ = step.q === dim.questions.length - 1;
     const isLastDim = step.dim === DIMENSIONS.length - 1;
-    if (isLastQ && isLastDim) {
-      nav({ to: "/dados" });
-      return;
-    }
-    if (isLastQ) {
-      setStep({ dim: step.dim, q: step.q, transition: true });
-      return;
-    }
+    if (isLastQ && isLastDim) { nav({ to: "/dados" }); return; }
+    if (isLastQ) { setStep({ dim: step.dim, q: step.q, transition: true }); return; }
     setStep({ dim: step.dim, q: step.q + 1 });
     setAnimKey((k) => k + 1);
   }
 
-  function goNextDim() {
-    setStep({ dim: step.dim + 1, q: 0 });
-    setAnimKey((k) => k + 1);
-  }
+  function goNextDim() { setStep({ dim: step.dim + 1, q: 0 }); setAnimKey((k) => k + 1); }
 
   function goBack() {
     if (step.transition) { setStep({ dim: step.dim, q: step.q }); return; }
@@ -53,32 +45,28 @@ function Diagnostico() {
     if (step.q === 0) {
       const prev = DIMENSIONS[step.dim - 1];
       setStep({ dim: step.dim - 1, q: prev.questions.length - 1 });
-    } else {
-      setStep({ dim: step.dim, q: step.q - 1 });
-    }
+    } else { setStep({ dim: step.dim, q: step.q - 1 }); }
     setAnimKey((k) => k + 1);
   }
 
-  function pick(score: number) {
-    setAnswer(question.id, score);
-    setTimeout(advance, 400);
-  }
+  function pick(score: number) { setAnswer(question.id, score); setTimeout(advance, 380); }
 
   const selected = answers[question.id];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen text-foreground flex flex-col relative overflow-hidden">
+      <GearBackground className="fixed inset-0 -z-10 pointer-events-none" primaryOpacity={0.06} secondaryOpacity={0.04} />
       <Header />
 
       {/* progress */}
-      <div className="fixed top-16 inset-x-0 z-40 bg-background border-b border-border">
+      <div className="fixed top-16 inset-x-0 z-40 border-b" style={{ background: "rgba(11,22,41,0.85)", backdropFilter: "blur(10px)", borderColor: "rgba(0,201,200,0.13)" }}>
         <div className="max-w-4xl mx-auto px-5 py-3">
-          <div className="flex items-center justify-between font-mono text-[10px] text-secondary-fg tracking-wider mb-2">
-            <span>DIMENSÃO {step.dim + 1} DE 9 · {dim.name.toUpperCase()}</span>
-            <span>{Math.round(progress)}%</span>
+          <div className="flex items-center justify-between uppercase-label mb-2" style={{ color: "rgba(248,246,242,0.55)" }}>
+            <span>Dimensão {step.dim + 1} de 9 · {dim.name}</span>
+            <span className="text-primary">{Math.round(progress)}%</span>
           </div>
-          <div className="h-1 bg-card overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+          <div className="h-1 overflow-hidden" style={{ background: "rgba(0,201,200,0.1)" }}>
+            <div className="h-full bg-cyan-gold-gradient transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         </div>
       </div>
@@ -87,26 +75,21 @@ function Diagnostico() {
         <div className="w-full max-w-2xl">
           <button
             onClick={goBack}
-            className="font-mono text-[11px] text-secondary-fg hover:text-primary mb-8 transition-colors"
+            className="uppercase-label hover:text-primary mb-8 transition-colors"
+            style={{ color: "rgba(248,246,242,0.55)" }}
             disabled={step.dim === 0 && step.q === 0 && !step.transition}
           >
             ← Voltar
           </button>
 
           {step.transition ? (
-            <TransitionScreen
-              key={`t-${step.dim}`}
-              nextDim={DIMENSIONS[step.dim + 1]}
-              onNext={goNextDim}
-            />
+            <TransitionScreen key={`t-${step.dim}`} nextDim={DIMENSIONS[step.dim + 1]} onNext={goNextDim} />
           ) : (
             <div key={animKey} className="slide-in-right">
-              <p className="font-mono text-[11px] text-primary tracking-widest mb-4">
-                {dim.name.toUpperCase()} · P{step.q + 1} DE {dim.questions.length}
-              </p>
+              <span className="section-label">{dim.name} · P{step.q + 1} de {dim.questions.length}</span>
               <h2
-                className="font-display font-bold text-center leading-tight mb-10"
-                style={{ fontSize: "clamp(18px,3vw,26px)" }}
+                className="font-display text-center leading-tight mt-6 mb-10"
+                style={{ fontSize: "clamp(20px,3.2vw,30px)", fontWeight: 700 }}
               >
                 {question.text}
               </h2>
@@ -118,14 +101,13 @@ function Diagnostico() {
                     <button
                       key={idx}
                       onClick={() => pick(opt.score)}
-                      className={`w-full text-left px-5 py-4 border transition-all flex items-center justify-between gap-4 ${
-                        isSel
-                          ? "border-primary bg-orange-medium"
-                          : "border-[var(--border-strong)] hover:border-primary hover:bg-orange-soft"
+                      className={`w-full text-left px-5 py-4 transition-all flex items-center justify-between gap-4 surface-card ${
+                        isSel ? "border-primary glow-cyan" : "hover:border-primary/50"
                       }`}
+                      style={isSel ? { background: "rgba(0,201,200,0.10)" } : undefined}
                     >
-                      <span className="text-sm">{opt.text}</span>
-                      {isSel && <span className="text-primary font-mono">✓</span>}
+                      <span className="text-sm font-light">{opt.text}</span>
+                      {isSel && <span className="text-primary font-bebas text-lg">✓</span>}
                     </button>
                   );
                 })}
@@ -138,21 +120,16 @@ function Diagnostico() {
   );
 }
 
-function TransitionScreen({
-  nextDim, onNext,
-}: { nextDim: typeof DIMENSIONS[number]; onNext: () => void }) {
+function TransitionScreen({ nextDim, onNext }: { nextDim: typeof DIMENSIONS[number]; onNext: () => void }) {
   return (
     <div className="text-center fade-in py-12">
-      <p className="font-mono text-[11px] text-secondary-fg tracking-widest">PRÓXIMA DIMENSÃO</p>
-      <div className="font-mono text-5xl text-primary mt-6">{nextDim.icon}</div>
-      <h2 className="font-display font-extrabold text-3xl md:text-4xl mt-6">{nextDim.name}</h2>
-      <p className="text-secondary-fg mt-3 max-w-md mx-auto">{nextDim.short}</p>
-      <button
-        onClick={onNext}
-        className="mt-10 inline-flex bg-primary text-primary-foreground font-display font-bold px-8 py-3.5 hover:bg-[oklch(0.74_0.18_45)] transition-colors"
-      >
-        Próxima dimensão →
-      </button>
+      <span className="section-label justify-center">Próxima Dimensão</span>
+      <div className="font-bebas text-6xl text-primary mt-8">{nextDim.icon}</div>
+      <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ fontWeight: 700 }}>
+        <span className="italic-display text-cyan-gradient">{nextDim.name}</span>
+      </h2>
+      <p className="text-secondary-fg mt-3 max-w-md mx-auto font-light">{nextDim.short}</p>
+      <button onClick={onNext} className="btn-primary mt-10 inline-flex">Próxima dimensão →</button>
     </div>
   );
 }
