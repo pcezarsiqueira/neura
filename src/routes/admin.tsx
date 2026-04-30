@@ -54,16 +54,17 @@ function Admin() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-5">
-        <div className="max-w-sm w-full bg-card p-8 border-l-orange">
-          <h1 className="font-display font-extrabold text-2xl">Admin · NEURA Corp</h1>
-          <p className="text-secondary-fg text-sm mt-2">Acesso restrito.</p>
+      <div className="min-h-screen text-foreground flex items-center justify-center px-5">
+        <div className="max-w-sm w-full surface-card-strong p-8">
+          <h1 className="font-display text-2xl" style={{ fontWeight: 700 }}>
+            Admin · <span className="italic-display text-cyan-gradient">NEURA</span>
+          </h1>
+          <p className="text-secondary-fg text-sm mt-2 font-light">Acesso restrito.</p>
           <input type="password" placeholder="Senha"
             value={pwd} onChange={(e) => setPwd(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && pwd === "neura2026") setAuthed(true); }}
             className="w-full mt-6 px-4 py-3 text-sm" />
-          <button onClick={() => pwd === "neura2026" && setAuthed(true)}
-            className="w-full mt-4 bg-primary text-primary-foreground font-display font-bold py-3 hover:bg-[oklch(0.74_0.18_45)] transition-colors">
+          <button onClick={() => pwd === "neura2026" && setAuthed(true)} className="btn-primary w-full mt-4">
             Entrar
           </button>
         </div>
@@ -72,42 +73,43 @@ function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <Header showCta={false} />
       <div className="pt-24 pb-16 px-5 sm:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="font-display font-extrabold text-3xl">Diagnósticos</h1>
-              <p className="text-secondary-fg text-sm mt-1">{records.length} registros</p>
+              <span className="section-label">Painel</span>
+              <h1 className="font-display text-3xl mt-3" style={{ fontWeight: 700 }}>
+                <span className="italic-display text-cyan-gradient">Diagnósticos</span>
+              </h1>
+              <p className="text-secondary-fg text-sm mt-1 font-light">{records.length} registros</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={exportCsv}
-                className="font-mono text-xs text-primary border border-primary px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors">
-                Exportar CSV
-              </button>
+              <button onClick={exportCsv} className="btn-ghost text-[10px]">Exportar CSV</button>
               <button onClick={clearAll}
-                className="font-mono text-xs text-danger border border-[var(--color-destructive)] px-4 py-2 hover:bg-[var(--color-destructive)] hover:text-white transition-colors">
+                className="text-[10px] uppercase tracking-[0.12em] font-medium border px-4 py-2 transition-colors"
+                style={{ color: "#C084FC", borderColor: "#C084FC" }}>
                 Limpar tudo
               </button>
             </div>
           </div>
 
           <div className="mt-8 overflow-x-auto scrollbar-thin">
-            <table className="w-full text-xs font-mono">
+            <table className="w-full text-xs">
               <thead>
-                <tr className="text-secondary-fg text-left border-b border-[var(--border-strong)]">
-                  <th className="py-3 px-2">Data</th>
-                  <th className="py-3 px-2">Nome</th>
-                  <th className="py-3 px-2">Cargo</th>
-                  <th className="py-3 px-2">Empresa</th>
-                  <th className="py-3 px-2">Setor</th>
-                  <th className="py-3 px-2">Colab.</th>
+                <tr className="text-left border-b" style={{ borderColor: "rgba(0,201,200,0.28)", color: "rgba(248,246,242,0.55)" }}>
+                  <th className="py-3 px-2 uppercase-label">Data</th>
+                  <th className="py-3 px-2 uppercase-label">Nome</th>
+                  <th className="py-3 px-2 uppercase-label">Cargo</th>
+                  <th className="py-3 px-2 uppercase-label">Empresa</th>
+                  <th className="py-3 px-2 uppercase-label">Setor</th>
+                  <th className="py-3 px-2 uppercase-label">Colab.</th>
                   {DIMENSIONS.map((d) => (
-                    <th key={d.key} className="py-3 px-2 text-right">{d.name.split(" ")[0].slice(0, 6)}</th>
+                    <th key={d.key} className="py-3 px-2 text-right uppercase-label">{d.name.split(" ")[0].slice(0, 6)}</th>
                   ))}
-                  <th className="py-3 px-2">Mais fraca</th>
-                  <th className="py-3 px-2 text-right text-primary">Geral</th>
+                  <th className="py-3 px-2 uppercase-label">Mais fraca</th>
+                  <th className="py-3 px-2 text-right uppercase-label" style={{ color: "#00C9C8" }}>Geral</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,25 +117,25 @@ function Admin() {
                   const dimMap = Object.fromEntries(r.scores.map((s) => [s.key, s.percent]));
                   const weakest = [...r.scores].sort((a, b) => a.percent - b.percent)[0]?.name ?? "";
                   return (
-                    <tr key={r.id} className="border-b border-[var(--border-strong)]/50 hover:bg-card">
+                    <tr key={r.id} className="border-b font-light" style={{ borderColor: "rgba(0,201,200,0.13)" }}>
                       <td className="py-3 px-2 text-secondary-fg">{new Date(r.ts).toLocaleString("pt-BR")}</td>
                       <td className="py-3 px-2">{r.org.nome}</td>
                       <td className="py-3 px-2 text-secondary-fg">{r.org.cargo}</td>
-                      <td className="py-3 px-2 text-foreground">{r.org.empresa}</td>
+                      <td className="py-3 px-2">{r.org.empresa}</td>
                       <td className="py-3 px-2 text-secondary-fg">{r.org.setor}</td>
                       <td className="py-3 px-2 text-secondary-fg">{r.org.colaboradores}</td>
                       {DIMENSIONS.map((d) => {
                         const p = dimMap[d.key] ?? 0;
-                        const c = p >= 70 ? "var(--color-success)" : p >= 40 ? "var(--color-primary)" : "var(--color-destructive)";
-                        return <td key={d.key} className="py-3 px-2 text-right" style={{ color: c }}>{p}</td>;
+                        const c = p >= 70 ? "#00C9C8" : p >= 40 ? "#D4A843" : "#C084FC";
+                        return <td key={d.key} className="py-3 px-2 text-right font-bebas text-sm" style={{ color: c }}>{p}</td>;
                       })}
-                      <td className="py-3 px-2 text-danger">{weakest}</td>
-                      <td className="py-3 px-2 text-right text-primary font-bold">{r.overallPercent}%</td>
+                      <td className="py-3 px-2" style={{ color: "#C084FC" }}>{weakest}</td>
+                      <td className="py-3 px-2 text-right font-bebas text-base" style={{ color: "#00C9C8" }}>{r.overallPercent}%</td>
                     </tr>
                   );
                 })}
                 {records.length === 0 && (
-                  <tr><td colSpan={20} className="py-12 text-center text-secondary-fg">Nenhum diagnóstico ainda.</td></tr>
+                  <tr><td colSpan={20} className="py-12 text-center text-secondary-fg font-light">Nenhum diagnóstico ainda.</td></tr>
                 )}
               </tbody>
             </table>
