@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "neura-frontend",
-      script: "npx",
-      args: "serve -s /app/dist -l 8080",
+      script: "npm",
+      args: "run preview -- --host 0.0.0.0 --port 8080",
       cwd: "/app",
       env: {
         NODE_ENV: "production",

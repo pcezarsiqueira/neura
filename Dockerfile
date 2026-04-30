@@ -12,7 +12,7 @@ RUN npm run build
 WORKDIR /app/database/api-node
 RUN npm install
 
-RUN npm install -g pm2 serve
+RUN npm install -g pm2
 
 WORKDIR /app
 
