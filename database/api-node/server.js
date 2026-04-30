@@ -42,6 +42,8 @@ const app = express();
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json({ limit: "1mb" }));
 
+app.get("/health", (_req, res) => res.json({ ok: true }));
+
 // Auth opcional via header x-api-key
 app.use((req, res, next) => {
   if (!API_KEY) return next();

@@ -1,0 +1,70 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: neura-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-neura_corp}
+      MYSQL_USER: ${DB_USER:-neura}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-neura_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    volumes:
+      - neura_mysql_data:/var/lib/mysql
+      - ./db/schema.mysql.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./database/api-node
+    container_name: neura-api
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-neura}
+      DB_PASSWORD: ${DB_PASSWORD:-neura_password}
+      DB_NAME: ${DB_NAME:-neura_corp}
+      API_KEY: ${API_KEY:-}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    expose:
+      - "3001"
+
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_STORAGE_DRIVER: http
+        VITE_API_BASE_URL: /api
+    container_name: neura-frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+    # Se usa Traefik, comente "ports" acima e descomente/ajuste as labels abaixo.
+    # networks:
+    #   - default
+    #   - root_default
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.neura.rule=Host(`neura.institutosiqueira.com.br`)
+    #   - traefik.http.routers.neura.entrypoints=websecure
+    #   - traefik.http.routers.neura.tls=true
+    #   - traefik.http.routers.neura.tls.certresolver=mytlschallenge
+    #   - traefik.http.services.neura.loadbalancer.server.port=80
+
+volumes:
+  neura_mysql_data:
+
+# networks:
+#   root_default:
+#     external: true

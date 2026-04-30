@@ -1,22 +1,25 @@
-FROM node:20-alpine
+# Frontend React/Vite servido pelo Nginx
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json ./
 RUN npm install
 
 COPY . .
 
+ARG VITE_STORAGE_DRIVER=http
+ARG VITE_API_BASE_URL=/api
+ENV VITE_STORAGE_DRIVER=$VITE_STORAGE_DRIVER
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 RUN npm run build
 
-WORKDIR /app/database/api-node
-RUN npm install
+FROM nginx:1.27-alpine
 
-RUN npm install -g pm2
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
 
-WORKDIR /app
+EXPOSE 80
 
-EXPOSE 8080
-EXPOSE 3001
-
-CMD ["pm2-runtime", "database/ecosystem.config.cjs"]
+CMD ["nginx", "-g", "daemon off;"]

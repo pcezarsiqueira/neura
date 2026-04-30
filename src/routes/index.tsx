@@ -4,12 +4,6 @@ import { GearBackground } from "@/components/GearBackground";
 import { DIMENSIONS } from "@/data/dimensions";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "NEURA · Diagnóstico de Eficácia Organizacional" },
-      { name: "description", content: "9 dimensões de eficácia organizacional para equipes e empresas. Diagnóstico técnico em ~12 minutos." },
-    ],
-  }),
   component: Landing,
 });
 
