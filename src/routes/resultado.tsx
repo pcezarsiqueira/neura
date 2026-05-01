@@ -1,14 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef } from "react";
 import { Header } from "@/components/Header";
 import { GearBackground } from "@/components/GearBackground";
 import { GearChart } from "@/components/GearChart";
 import { useDiagnostic } from "@/state/diagnosticContext";
 import { generatePdf } from "@/lib/pdf";
-
-export const Route = createFileRoute("/resultado")({
-  component: Resultado,
-});
 
 function statusFor(p: number) {
   if (p >= 75) return { tone: "cyan", title: "Sistema com boa base — gaps pontuais para calibrar" };
@@ -31,7 +27,7 @@ function Resultado() {
   const { org, scores, overallPercent, answers } = useDiagnostic();
   const reportRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { if (!org.empresa) nav({ to: "/" }); }, [org.empresa, nav]);
+  useEffect(() => { if (!org.empresa) nav("/"); }, [org.empresa, nav]);
 
   const status = statusFor(overallPercent);
   const sortedAsc = useMemo(() => [...scores].sort((a, b) => a.percent - b.percent), [scores]);
@@ -211,3 +207,5 @@ function Marco({ tone, icon, tag, title, text, badge }: {
     </div>
   );
 }
+
+export default Resultado;

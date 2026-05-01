@@ -1,12 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { DIMENSIONS } from "@/data/dimensions";
 import { storage, type DiagnosticRecord } from "@/lib/storage";
-
-export const Route = createFileRoute("/admin")({
-  component: Admin,
-});
 
 type Record = DiagnosticRecord;
 
@@ -145,3 +140,5 @@ function Admin() {
     </div>
   );
 }
+
+export default Admin;

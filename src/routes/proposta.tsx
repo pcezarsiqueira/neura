@@ -1,11 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { GearBackground } from "@/components/GearBackground";
-
-export const Route = createFileRoute("/proposta")({
-  component: Proposta,
-});
 
 const COLAB = ["Até 100", "100 a 500", "500 a 2000", "Acima de 2000"];
 
@@ -156,3 +151,5 @@ function Proposta() {
     </div>
   );
 }
+
+export default Proposta;
