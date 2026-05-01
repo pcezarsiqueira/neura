@@ -1,11 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { GearBackground } from "@/components/GearBackground";
 import { DIMENSIONS } from "@/data/dimensions";
-
-export const Route = createFileRoute("/")({
-  component: Landing,
-});
 
 function StatCard({ big, text }: { big: string; text: string }) {
   return (
@@ -102,3 +98,5 @@ function DimCard({ d }: { d: typeof DIMENSIONS[number] }) {
     </div>
   );
 }
+
+export default Landing;

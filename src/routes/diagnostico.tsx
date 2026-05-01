@@ -1,13 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { GearBackground } from "@/components/GearBackground";
 import { DIMENSIONS, TOTAL_QUESTIONS } from "@/data/dimensions";
 import { useDiagnostic } from "@/state/diagnosticContext";
-
-export const Route = createFileRoute("/diagnostico")({
-  component: Diagnostico,
-});
 
 type Step = { dim: number; q: number; transition?: boolean };
 

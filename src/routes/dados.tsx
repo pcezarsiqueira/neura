@@ -1,13 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { GearBackground } from "@/components/GearBackground";
 import { useDiagnostic, type OrgData } from "@/state/diagnosticContext";
 import { storage } from "@/lib/storage";
-
-export const Route = createFileRoute("/dados")({
-  component: Dados,
-});
 
 const COLAB = ["Até 100", "100 a 500", "500 a 2000", "Acima de 2000"];
 
