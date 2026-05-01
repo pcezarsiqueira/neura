@@ -107,7 +107,7 @@ function Dados() {
     try {
       await storage.save({ org: data, answers, scores, overallPercent, ts: Date.now() });
     } catch (e) { console.error("storage.save failed", e); }
-    nav({ to: "/resultado" });
+    nav("/resultado");
   }
 
   return (
@@ -130,3 +130,5 @@ function Dados() {
     </div>
   );
 }
+
+export default Dados;

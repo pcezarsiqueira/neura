@@ -27,7 +27,7 @@ function Resultado() {
   const { org, scores, overallPercent, answers } = useDiagnostic();
   const reportRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { if (!org.empresa) nav({ to: "/" }); }, [org.empresa, nav]);
+  useEffect(() => { if (!org.empresa) nav("/"); }, [org.empresa, nav]);
 
   const status = statusFor(overallPercent);
   const sortedAsc = useMemo(() => [...scores].sort((a, b) => a.percent - b.percent), [scores]);
@@ -207,3 +207,5 @@ function Marco({ tone, icon, tag, title, text, badge }: {
     </div>
   );
 }
+
+export default Resultado;

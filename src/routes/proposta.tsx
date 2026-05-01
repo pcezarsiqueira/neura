@@ -151,3 +151,5 @@ function Proposta() {
     </div>
   );
 }
+
+export default Proposta;
