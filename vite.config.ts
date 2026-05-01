@@ -1,10 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths";
+import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), tailwindcss()],
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   server: {
     host: "0.0.0.0",
     port: 5173,
@@ -12,15 +17,15 @@ export default defineConfig({
       "neura.institutosiqueira.com.br",
       "www.neura.institutosiqueira.com.br",
       "localhost",
-      "127.0.0.1"
+      "127.0.0.1",
     ],
     proxy: {
       "/api": {
         target: "http://api:3001",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "")
-      }
-    }
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
   preview: {
     host: "0.0.0.0",
@@ -29,7 +34,7 @@ export default defineConfig({
       "neura.institutosiqueira.com.br",
       "www.neura.institutosiqueira.com.br",
       "localhost",
-      "127.0.0.1"
-    ]
-  }
+      "127.0.0.1",
+    ],
+  },
 });
