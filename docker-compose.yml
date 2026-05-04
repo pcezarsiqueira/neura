@@ -1,13 +1,13 @@
 services:
-  diagnostico:
-    image: diagnostico-diagnostico:latest
+  neura:
+    image: neura-frontend:latest
     build:
       context: .
       dockerfile: Dockerfile
       args:
         VITE_STORAGE_DRIVER: http
         VITE_API_BASE_URL: /api
-    container_name: diagnostico
+    container_name: neura
     restart: always
     env_file:
       - .env.local
@@ -15,10 +15,10 @@ services:
       - root_default
     labels:
       - traefik.enable=true
-      - traefik.http.routers.diagnostico.rule=Host(`diagnostico.paulinhosiqueira.com.br`)
-      - traefik.http.routers.diagnostico.entrypoints=websecure
-      - traefik.http.routers.diagnostico.tls.certresolver=mytlschallenge
-      - traefik.http.services.diagnostico.loadbalancer.server.port=3300
+      - traefik.http.routers.neura.rule=Host(`neura.institutosiqueira.com.br`)
+      - traefik.http.routers.neura.entrypoints=websecure
+      - traefik.http.routers.neura.tls.certresolver=mytlschallenge
+      - traefik.http.services.neura.loadbalancer.server.port=3300
 
 networks:
   root_default:
