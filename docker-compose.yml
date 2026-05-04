@@ -16,6 +16,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - default
 
   api:
     build:
@@ -37,6 +39,19 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
     expose:
       - "3001"
+    networks:
+      - default
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK:-traefik}
+      - traefik.http.routers.neura-api.rule=Host(`${APP_HOST:-neura.institutosiqueira.com.br}`) && PathPrefix(`/api`)
+      - traefik.http.routers.neura-api.entrypoints=websecure
+      - traefik.http.routers.neura-api.tls=true
+      - traefik.http.routers.neura-api.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-mytlschallenge}
+      - traefik.http.routers.neura-api.middlewares=neura-api-strip
+      - traefik.http.middlewares.neura-api-strip.stripprefix.prefixes=/api
+      - traefik.http.services.neura-api.loadbalancer.server.port=3001
 
   frontend:
     build:
@@ -48,23 +63,25 @@ services:
     restart: unless-stopped
     depends_on:
       - api
-    ports:
-      - "8080:80"
-    # Se usa Traefik, comente "ports" acima e descomente/ajuste as labels abaixo.
-    # networks:
-    #   - default
-    #   - root_default
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.http.routers.neura.rule=Host(`neura.institutosiqueira.com.br`)
-    #   - traefik.http.routers.neura.entrypoints=websecure
-    #   - traefik.http.routers.neura.tls=true
-    #   - traefik.http.routers.neura.tls.certresolver=mytlschallenge
-    #   - traefik.http.services.neura.loadbalancer.server.port=80
+    expose:
+      - "80"
+    networks:
+      - default
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK:-traefik}
+      - traefik.http.routers.neura.rule=Host(`${APP_HOST:-neura.institutosiqueira.com.br}`)
+      - traefik.http.routers.neura.entrypoints=websecure
+      - traefik.http.routers.neura.tls=true
+      - traefik.http.routers.neura.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-mytlschallenge}
+      - traefik.http.services.neura.loadbalancer.server.port=80
 
 volumes:
   neura_mysql_data:
 
-# networks:
-#   root_default:
-#     external: true
+networks:
+  default:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}
