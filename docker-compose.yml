@@ -1,61 +1,25 @@
 services:
-  api:
-    build:
-      context: ./database/api-node
-    container_name: neura-api
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3001
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT:-3306}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      API_KEY: ${API_KEY:-}
-      CORS_ORIGIN: ${CORS_ORIGIN:-*}
-    expose:
-      - "3001"
-    networks:
-      - default
-      - traefik
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=${TRAEFIK_NETWORK:-traefik}
-      - traefik.http.routers.neura-api.rule=Host(`${APP_HOST:-neura.institutosiqueira.com.br}`) && PathPrefix(`/api`)
-      - traefik.http.routers.neura-api.entrypoints=websecure
-      - traefik.http.routers.neura-api.tls=true
-      - traefik.http.routers.neura-api.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-mytlschallenge}
-      - traefik.http.routers.neura-api.middlewares=neura-api-strip
-      - traefik.http.middlewares.neura-api-strip.stripprefix.prefixes=/api
-      - traefik.http.services.neura-api.loadbalancer.server.port=3001
-
-  frontend:
+  diagnostico:
+    image: diagnostico-diagnostico:latest
     build:
       context: .
+      dockerfile: Dockerfile
       args:
         VITE_STORAGE_DRIVER: http
         VITE_API_BASE_URL: /api
-    container_name: neura-frontend
-    restart: unless-stopped
-    depends_on:
-      - api
-    expose:
-      - "80"
+    container_name: diagnostico
+    restart: always
+    env_file:
+      - .env.local
     networks:
-      - default
-      - traefik
+      - root_default
     labels:
       - traefik.enable=true
-      - traefik.docker.network=${TRAEFIK_NETWORK:-traefik}
-      - traefik.http.routers.neura.rule=Host(`${APP_HOST:-neura.institutosiqueira.com.br}`)
-      - traefik.http.routers.neura.entrypoints=websecure
-      - traefik.http.routers.neura.tls=true
-      - traefik.http.routers.neura.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-mytlschallenge}
-      - traefik.http.services.neura.loadbalancer.server.port=80
+      - traefik.http.routers.diagnostico.rule=Host(`diagnostico.paulinhosiqueira.com.br`)
+      - traefik.http.routers.diagnostico.entrypoints=websecure
+      - traefik.http.routers.diagnostico.tls.certresolver=mytlschallenge
+      - traefik.http.services.diagnostico.loadbalancer.server.port=3300
 
 networks:
-  default:
-  traefik:
+  root_default:
     external: true
-    name: ${TRAEFIK_NETWORK:-traefik}
